@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 // const cookieParser = require('cookie-parser')
 
 //* express 할당
@@ -155,6 +156,7 @@ const users = [
 ];
 
 app.use(express.json());
+app.use(cors());
 
 //* / 경로에 get 요청에 대해 작동
 app.get("/movies", (req, res) => {
@@ -205,11 +207,10 @@ app.post("/movies", (req, res) => {
   // 3. 조회수(hit_count)는 기본으로 0
   newMovie.hit_count = 0;
   // 4. 작성일은 현재시각
-  newMovie.created_at = new Date().toISOString();
+  newMovie.created_at = new Date().toLocaleString();
   // 5. id까지 부여된 영화 정보를 movies에 추가한다.
   movies.push(newMovie);
-  console.log(newMovie);
-  res.send("무비등록");
+  res.send(newMovie);
 });
 
 //* app listen (서버 실행)
