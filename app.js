@@ -14,6 +14,13 @@ const movies = [
     created_at: "2022-08-11 00:40:32",
   },
   {
+    id: 2,
+    movie_title: "Misérables, Les",
+    hit_count: 23,
+    user_id: 1,
+    created_at: "2022-08-11 00:40:32",
+  },
+  {
     id: 3,
     movie_title: "Captain Ron",
     hit_count: 1,
@@ -140,6 +147,76 @@ const movies = [
     user_id: 9,
     created_at: "2022-12-13 00:46:27",
   },
+  {
+    id: 21,
+    movie_title: "Power and Terror: Noam Chomsky in Our Times",
+    hit_count: 85,
+    user_id: 3,
+    created_at: "2022-04-30 19:43:43",
+  },
+  {
+    id: 22,
+    movie_title: "Grumpy Cat's Worst Christmas Ever",
+    hit_count: 58,
+    user_id: 9,
+    created_at: "2022-12-13 00:46:27",
+  },
+  {
+    id: 23,
+    movie_title: "Power and Terror: Noam Chomsky in Our Times",
+    hit_count: 85,
+    user_id: 3,
+    created_at: "2022-04-30 19:43:43",
+  },
+  {
+    id: 24,
+    movie_title: "Grumpy Cat's Worst Christmas Ever",
+    hit_count: 58,
+    user_id: 9,
+    created_at: "2022-12-13 00:46:27",
+  },
+  {
+    id: 25,
+    movie_title: "Power and Terror: Noam Chomsky in Our Times",
+    hit_count: 85,
+    user_id: 3,
+    created_at: "2022-04-30 19:43:43",
+  },
+  {
+    id: 26,
+    movie_title: "Grumpy Cat's Worst Christmas Ever",
+    hit_count: 58,
+    user_id: 9,
+    created_at: "2022-12-13 00:46:27",
+  },
+  {
+    id: 27,
+    movie_title: "Power and Terror: Noam Chomsky in Our Times",
+    hit_count: 85,
+    user_id: 3,
+    created_at: "2022-04-30 19:43:43",
+  },
+  {
+    id: 28,
+    movie_title: "Grumpy Cat's Worst Christmas Ever",
+    hit_count: 58,
+    user_id: 9,
+    created_at: "2022-12-13 00:46:27",
+  },
+  {
+    id: 29,
+    movie_title: "Power and Terror: Noam Chomsky in Our Times",
+    hit_count: 85,
+    user_id: 3,
+    created_at: "2022-04-30 19:43:43",
+  },
+  {
+    id: 30,
+    movie_title: "Grumpy Cat's Worst Christmas Ever",
+    hit_count: 58,
+    user_id: 9,
+    created_at: "2022-12-13 00:46:27",
+  },
 ];
 
 const users = [
@@ -160,24 +237,33 @@ app.use(cors());
 
 //* / 경로에 get 요청에 대해 작동
 app.get("/movies", (req, res) => {
-  res.send(
-    movies.map((movie) => ({
-      ...movie,
-      name: users.find((user) => user.id === movie.user_id).name,
-    }))
-  );
+  const moviesList = movies.map((movie) => ({
+    ...movie,
+    name: users.find((user) => user.id === movie.user_id).name,
+  }));
+
+  // 생성일 내림차순 정렬
+  moviesList.sort(function (a, b) {
+    const prevTImestamp = new Date(a.created_at).getTime();
+    const curTImestamp = new Date(b.created_at).getTime();
+
+    return curTImestamp - prevTImestamp;
+  });
+
+  //페이지네이션
+  const cloneMovies = [...moviesList];
+  const lastPage = Math.ceil(movies.length / 10);
+  const page = req.query.page || 1;
+  const startIndex = (page - 1) * 10;
+  const paginationMovies = cloneMovies.splice(startIndex, 10);
+
+  res.send({
+    pageInfo: {
+      lastPage,
+    },
+    movies: paginationMovies,
+  });
 });
-
-//상세조회 - hit_count도 올라가야함
-// app.get("/movies/:id", (req, res) => {
-//   const { id } = req.params;
-//   const findMovie = movies.find((movie) => movie.id === Number(id));
-//   const increaseReview = { ...findMovie, hit_count: findMovie.hit_count + 1 };
-//   const movie = movies.findIndex((movie) => movie.id === Number(id));
-//   movies.splice(movie, 1, increaseReview);
-
-//   res.send(findMovie);
-// });
 
 app.get("/movies/:id", (req, res) => {
   //splice사용
@@ -209,7 +295,7 @@ app.post("/movies", (req, res) => {
   // 4. 작성일은 현재시각
   newMovie.created_at = new Date().toLocaleString();
   // 5. id까지 부여된 영화 정보를 movies에 추가한다.
-  movies.push(newMovie);
+  movies.unshift(newMovie);
   res.send(newMovie);
 });
 
