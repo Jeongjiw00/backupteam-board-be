@@ -19,31 +19,13 @@ const numberToCurrency = (number, countryCode) => {
 
 const priceToKrwFormat = (price, country) => {
   const countryCode = country || "kr";
-  const cur = currencyByCountry[countryCode];
-  const priceKrw = new Intl.NumberFormat(cur.format, {
-    style: "currency",
-    currency: cur.currency,
-  }).format(price);
-
-  let tax = (price / 11) * 10;
-  tax = Math.round(tax);
-  tax = new Intl.NumberFormat(cur.format, {
-    style: "currency",
-    currency: cur.currency,
-  }).format(tax);
-
-  let originalPrice = price / 11;
-  originalPrice = new Intl.NumberFormat(cur.format, {
-    style: "currency",
-    currency: cur.currency,
-  }).format(originalPrice);
-
   return {
-    priceKrw,
-    tax,
-    originalPrice,
+    priceKrw: numberToCurrency(price, countryCode),
+    tax: numberToCurrency(Math.round((price / 11) * 10), countryCode),
+    originalPrice: numberToCurrency(Math.round(price / 11), countryCode),
   };
 };
 
-const price = 100000;
-console.log(priceToKrwFormat(price));
+console.log(priceToKrwFormat(100000, "kr"));
+console.log(priceToKrwFormat(100000));
+console.log(priceToKrwFormat(100000, "en"));
